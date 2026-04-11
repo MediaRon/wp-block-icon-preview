@@ -3,7 +3,7 @@
  * Plugin Name: WP Block Icon Preview
  * Plugin URI:  https://dlxplugins.com
  * Description: A developer utility block for previewing and sanitizing SVG block icons.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      DLXPlugins
  * Author URI:  https://dlxplugins.com
  * Text Domain: wp-block-icon-preview
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'WP_BLOCK_ICON_PREVIEW_VERSION', '1.0.0' );
+define( 'WP_BLOCK_ICON_PREVIEW_VERSION', '1.0.1' );
 define( 'WP_BLOCK_ICON_PREVIEW_FILE', __FILE__ );
 define( 'WP_BLOCK_ICON_PREVIEW_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WP_BLOCK_ICON_PREVIEW_URL', plugin_dir_url( __FILE__ ) );
