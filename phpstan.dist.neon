@@ -1,0 +1,7 @@
+parameters:
+    level: 5
+    paths:
+        - wp-block-icon-preview.php
+        - src/php/
+    bootstrapFiles: []
+    ignoreErrors: []

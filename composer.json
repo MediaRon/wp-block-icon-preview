@@ -1,0 +1,17 @@
+{
+  "name": "dlxplugins/wp-block-icon-preview",
+  "description": "A developer utility block for previewing and sanitizing SVG block icons.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "DLXPlugins\\WPBlockIconPreview\\": "src/php/"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}

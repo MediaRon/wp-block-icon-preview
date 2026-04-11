@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "dlxplugins/block-icon-preview",
+  "version": "1.0.0",
+  "title": "WP Block Icon Preview",
+  "category": "widgets",
+  "icon": "admin-appearance",
+  "description": "A developer utility for previewing and sanitizing SVG block icons.",
+  "keywords": ["svg", "icon", "block", "developer", "preview"],
+  "textdomain": "wp-block-icon-preview",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "supports": {
+    "html": false,
+    "reusable": false,
+    "lock": false,
+    "align": false
+  },
+  "attributes": {},
+  "example": {}
+}

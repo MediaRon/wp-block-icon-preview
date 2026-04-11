@@ -1,0 +1,17 @@
+{
+  "name": "wp-block-icon-preview",
+  "version": "1.0.0",
+  "description": "A developer utility block for previewing and sanitizing SVG block icons.",
+  "scripts": {
+    "build": "wp-scripts build --webpack-copy-php && wp-scripts build-blocks-manifest --input=./build",
+    "start": "wp-scripts start",
+    "lint:js": "wp-scripts lint-js",
+    "lint:style": "wp-scripts lint-style",
+    "lint:php": "composer run lint",
+    "format": "wp-scripts format",
+    "packages-update": "wp-scripts packages-update"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.0.0"
+  }
+}
