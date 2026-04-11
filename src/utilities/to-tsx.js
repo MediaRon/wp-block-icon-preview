@@ -1,11 +1,31 @@
 /**
- * Convert an SVG element to TSX string format (typed React component).
- *
- * @param {SVGElement} svgElement    - SVG element to convert.
- * @param {string}     [name='Icon'] - Component name to use.
- * @return {string} TSX component string.
+ * SVG → TSX via SVGR (@svgr/core + @svgr/plugin-jsx).
  */
-export function toTsx( svgElement, name = 'Icon' ) {
-	// TODO: implement SVG-to-TSX conversion.
-	return '';
+
+import { transform } from '@svgr/core';
+import {
+	createSvgrConfig,
+	createSvgrState,
+	normalizeSvgInput,
+	sanitizeComponentName,
+} from './svgr-shared-config';
+
+/**
+ * Convert sanitized SVG markup to a TypeScript React component string.
+ *
+ * @param {string|SVGElement} svgInput - SVG string or root `<svg>` element.
+ * @param {string}            [name='Icon'] - Component name.
+ * @return {Promise<string>} TSX source.
+ */
+export async function toTsx( svgInput, name = 'Icon' ) {
+	const str = normalizeSvgInput( svgInput );
+	if ( ! str ) {
+		return '';
+	}
+	const componentName = sanitizeComponentName( name );
+	return transform(
+		str,
+		createSvgrConfig( { typescript: true } ),
+		createSvgrState( componentName )
+	);
 }
