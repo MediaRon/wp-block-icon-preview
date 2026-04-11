@@ -1,7 +1,10 @@
 /**
  * Build an SVG string for .org-style preview: only svg, g, and path elements.
  * Other elements (e.g. circle, rect) are removed; empty groups may remain.
+ * Root `<svg>` is reduced to WordPress.org–allowed attributes only.
  */
+
+import { stripNonOrgSvgRootAttributes } from './org-icon-rules';
 
 const ORG_PREVIEW_TAGS = new Set( [ 'svg', 'g', 'path' ] );
 
@@ -13,6 +16,7 @@ export function serializeOrgIconSubset( root ) {
 	const clone = /** @type {SVGElement} */ ( root.cloneNode( true ) );
 	pruneDisallowedElements( clone );
 	removeEmptyGroups( clone );
+	stripNonOrgSvgRootAttributes( clone );
 	return clone.outerHTML;
 }
 

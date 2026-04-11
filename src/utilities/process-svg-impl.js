@@ -1,8 +1,7 @@
 /**
  * Full client-side pipeline: parse → metrics → sanitize → SVGR exports + React transform check.
  *
- * Loaded asynchronously from process-svg.js so SVGO, DOMPurify, and SVGR stay out of the
- * initial view bundle.
+ * Sanitize (DOMPurify + SVGO) and SVGR (@svgr/core) load in separate async chunks via import().
  */
 
 import { parseSvg } from './parse-svg';
@@ -10,9 +9,6 @@ import {
 	collectOrgMetrics,
 	countInlineStyles,
 } from './org-svg-metrics';
-import { sanitizeSvgString } from './sanitize-svg';
-import { toJsx } from './to-jsx';
-import { toTsx } from './to-tsx';
 import {
 	toBlockJsonString,
 	toBlockJsonEscapedInner,
@@ -46,6 +42,11 @@ export async function processSvgInput( rawString, options = {} ) {
 	}
 
 	const preMetrics = collectOrgMetrics( parse.svg );
+
+	const { sanitizeSvgString } = await import(
+		/* webpackChunkName: "block-svg-preview/chunk-sanitize" */
+		'./sanitize-svg.js'
+	);
 
 	let sanitizedSvg;
 	try {
@@ -83,6 +84,11 @@ export async function processSvgInput( rawString, options = {} ) {
 	const toolbarPreviewSvgMono = toolbarBuilt.svgString;
 	const toolbarFillsReplacedCount = toolbarBuilt.replacedCount;
 
+	const { toJsx, toTsx } = await import(
+		/* webpackChunkName: "block-svg-preview/chunk-svgr" */
+		'./svgr-transforms.js'
+	);
+
 	let jsxToolbarColor = '';
 	let tsxToolbarColor = '';
 	let jsxToolbarMono = '';
@@ -114,6 +120,8 @@ export async function processSvgInput( rawString, options = {} ) {
 		reactTransformOk,
 		hasXmlDeclaration: parse.hasXmlDeclaration,
 		hasDoctype: parse.hasDoctype,
+		disallowedOrgRootSvgAttributeCount:
+			sanitizedMetrics.disallowedOrgRootSvgAttributeCount,
 	} );
 
 	return {

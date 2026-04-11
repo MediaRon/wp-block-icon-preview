@@ -5,7 +5,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useId, useState } from '@wordpress/element';
 import { downloadTextFile } from '../../utilities/download-text-file';
-import { sanitizeComponentName } from '../../utilities/svgr-shared-config';
+import { sanitizeComponentName } from '../../utilities/svg-input-utils';
 import { WbipButton } from './Button';
 import { WbipCopyButton } from './CopyButton';
 
@@ -50,6 +50,10 @@ export function WbipSidebar({ result }) {
 
 	const safeName = sanitizeComponentName(rawComponentName || 'BlockIcon');
 	const fillSamples = sanitizedMetrics.fillSamples || [];
+	const disallowedOrgRootCount =
+		sanitizedMetrics.disallowedOrgRootSvgAttributeCount || 0;
+	const disallowedOrgRootSamples =
+		sanitizedMetrics.disallowedOrgRootSvgAttributeSamples || [];
 
 	const handleDownloadJsxToolbar = () => {
 		if (jsxToolbarActive) {
@@ -95,7 +99,8 @@ export function WbipSidebar({ result }) {
 		parse.hasDoctype ||
 		preMetrics.distinctFillCount > 1 ||
 		preMetrics.pathCount > 10 ||
-		preMetrics.incompatibleElementCount > 0;
+		preMetrics.incompatibleElementCount > 0 ||
+		disallowedOrgRootCount > 0;
 
 	return (
 		<div className="wbip-sidebar">
@@ -157,6 +162,37 @@ export function WbipSidebar({ result }) {
 							),
 							strippedInlineStyleCount
 						)}
+					</li>
+					<li
+						className={
+							disallowedOrgRootCount > 0
+								? 'wbip-status-list__item wbip-status-list__item--warn'
+								: 'wbip-status-list__item wbip-status-list__item--neutral'
+						}
+					>
+						{disallowedOrgRootCount > 0
+							? disallowedOrgRootSamples.length > 0
+								? sprintf(
+										/* translators: 1: Count of removed root SVG attributes. 2: Comma-separated attribute names (sample). */
+										__(
+											'Extra root SVG attributes removed for .org: %1$d (e.g. %2$s).',
+											'wp-block-icon-preview'
+										),
+										disallowedOrgRootCount,
+										disallowedOrgRootSamples.join( ', ' )
+									)
+								: sprintf(
+										/* translators: %d: Count of removed root SVG attributes. */
+										__(
+											'Extra root SVG attributes removed for .org: %d.',
+											'wp-block-icon-preview'
+										),
+										disallowedOrgRootCount
+									)
+							: __(
+									'Root SVG attributes match WordPress.org allowlist (role, aria-hidden, xmlns, width, height, viewBox, fill).',
+									'wp-block-icon-preview'
+								)}
 					</li>
 				</ul>
 			</details>
@@ -254,7 +290,7 @@ export function WbipSidebar({ result }) {
 					</h3>
 					<p className="wbip-preview-org__hint">
 						{__(
-							'Shows only svg, g, and path at 16×16 px; original fills kept (elements like circle are hidden).',
+							'Only svg, g, and path; root svg may use role, aria-hidden, xmlns, width, height, viewBox, fill only (others stripped). 16×16 px; original fills on paths/groups.',
 							'wp-block-icon-preview'
 						)}
 					</p>
@@ -306,10 +342,23 @@ export function WbipSidebar({ result }) {
 							{sprintf(
 								/* translators: %d: Count of elements outside svg/g/path. */
 								__(
-									'Found %d element(s) outside the simple svg / g / path shape recommended for .org block icons.',
+									'Found %d element(s) outside the svg / g / path structure allowed for WordPress.org block icons.',
 									'wp-block-icon-preview'
 								),
 								preMetrics.incompatibleElementCount
+							)}
+						</li>
+					)}
+					{disallowedOrgRootCount > 0 && (
+						<li className="wbip-issue-list__item wbip-issue-list__item--warn">
+							{sprintf(
+								/* translators: 1: Number of attributes. 2: Allowed list. */
+								__(
+									'Sanitized SVG had %1$d root SVG attribute(s) not allowed on WordPress.org (only %2$s). They are removed in the preview and block.json string.',
+									'wp-block-icon-preview'
+								),
+								disallowedOrgRootCount,
+								'role, aria-hidden, xmlns, width, height, viewBox, fill'
 							)}
 						</li>
 					)}
@@ -383,7 +432,7 @@ export function WbipSidebar({ result }) {
 					)}
 					<li className="wbip-issue-list__item wbip-issue-list__item--info">
 						{__(
-							'WordPress.org preview: 16×16 px root; only svg, g, path. Fill and stroke attributes are not modified for .org (same as sanitized SVG on remaining nodes).',
+							'WordPress.org preview and block.json: 16×16 px root; only svg, g, path. Root svg keeps only role, aria-hidden, xmlns, width, height, viewBox, fill. Other root attributes are stripped; child nodes keep sanitized attributes as elsewhere.',
 							'wp-block-icon-preview'
 						)}
 					</li>

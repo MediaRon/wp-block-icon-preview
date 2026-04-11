@@ -1,8 +1,9 @@
 /**
  * Element names treated as supported for WordPress.org-style block icon SVGs.
- * Matches svg-parser-scope-org.md (structure: svg, g, path) and typical .org icon markup.
  * Any other element under `<svg>` is counted as incompatible for diagnostics.
  */
+import { listDisallowedOrgRootSvgAttributeNames } from './org-icon-rules';
+
 const ORG_SUPPORTED_TAG_NAMES = new Set( [ 'svg', 'g', 'path' ] );
 
 /**
@@ -21,6 +22,10 @@ export function collectOrgMetrics( root ) {
 	/** @type {Set<string>} */
 	const fillValues = new Set();
 	const hasViewBox = root.hasAttribute( 'viewBox' );
+	const disallowedOrgRootSvgAttributeNames =
+		listDisallowedOrgRootSvgAttributeNames( root );
+	const disallowedOrgRootSvgAttributeCount =
+		disallowedOrgRootSvgAttributeNames.length;
 
 	/**
 	 * @param {Element} el
@@ -70,6 +75,10 @@ export function collectOrgMetrics( root ) {
 		/** @type {string[]} Sample of distinct fill values (for diagnostics). */
 		fillSamples: Array.from( fillValues ).slice( 0, 12 ),
 		hasViewBox,
+		disallowedOrgRootSvgAttributeCount,
+		/** @type {string[]} Root `<svg>` attribute names removed for .org (sample). */
+		disallowedOrgRootSvgAttributeSamples:
+			disallowedOrgRootSvgAttributeNames.slice( 0, 10 ),
 	};
 }
 

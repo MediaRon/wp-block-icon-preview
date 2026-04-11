@@ -85,7 +85,8 @@ export function replaceFillsWithCurrentColor( svgString ) {
 }
 
 /**
- * .org export/display: svg/g/path only, 16px root, original fills.
+ * .org export/display: svg/g/path only, root `<svg>` limited to role, aria-hidden, xmlns,
+ * width, height, viewBox, fill; 16px root; original fills on remaining nodes.
  *
  * @param {string} sanitizedFullSvg - Post-sanitize SVG.
  * @return {string} Markup for .org preview and SVGR org exports.

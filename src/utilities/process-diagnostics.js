@@ -9,6 +9,7 @@
  * @param {boolean} args.reactTransformOk
  * @param {boolean} args.hasXmlDeclaration
  * @param {boolean} args.hasDoctype
+ * @param {number}  [args.disallowedOrgRootSvgAttributeCount=0] - From sanitized SVG vs .org root allowlist.
  * @return {'safe'|'risky'|'fail'}
  */
 export function deriveVerdict( {
@@ -17,6 +18,7 @@ export function deriveVerdict( {
 	reactTransformOk,
 	hasXmlDeclaration,
 	hasDoctype,
+	disallowedOrgRootSvgAttributeCount = 0,
 } ) {
 	const fail =
 		preMetrics.incompatibleElementCount > 0 || ! preMetrics.hasViewBox;
@@ -30,6 +32,7 @@ export function deriveVerdict( {
 		hasXmlDeclaration ||
 		hasDoctype ||
 		strippedInlineStyleCount > 0 ||
+		disallowedOrgRootSvgAttributeCount > 0 ||
 		! reactTransformOk;
 	if ( risky ) {
 		return 'risky';

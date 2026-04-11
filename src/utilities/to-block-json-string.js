@@ -2,8 +2,10 @@
  * block.json icon field helpers (inline SVG string).
  */
 
-import { normalizeSvgInput, sanitizeComponentName } from './svgr-shared-config';
-import { toTsx } from './to-tsx';
+import {
+	normalizeSvgInput,
+	sanitizeComponentName,
+} from './svg-input-utils';
 
 /**
  * Collapse SVG to a single-line string suitable for block.json `"icon"` value.
@@ -58,6 +60,10 @@ export function toBlockJsonQuotedString( svgInput ) {
  * @return {Promise<string>} Comment + TSX module text from SVGR.
  */
 export async function toJsIconDefinition( svgInput, componentName = 'BlockIcon' ) {
+	const { toTsx } = await import(
+		/* webpackChunkName: "block-svg-preview/to-tsx-snippet" */
+		'./to-tsx'
+	);
 	const tsx = await toTsx( svgInput, componentName );
 	if ( ! tsx ) {
 		return '';
