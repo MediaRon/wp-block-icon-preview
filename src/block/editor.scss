@@ -1,0 +1,20 @@
+.wp-block-icon-preview-editor {
+	&__placeholder {
+		padding: 1rem;
+		border: 2px dashed #ddd;
+		border-radius: 4px;
+		text-align: center;
+		background: #f9f9f9;
+
+		h3 {
+			margin-top: 0;
+			color: #1e1e1e;
+		}
+
+		p {
+			margin: 0;
+			color: #555;
+			font-size: 13px;
+		}
+	}
+}
