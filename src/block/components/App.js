@@ -1,8 +1,24 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { parseSvg } from '../../utilities/parse-svg';
+import { sanitizeSvg } from '../../utilities/sanitize-svg';
 
 export default function App() {
 	const [ svgInput, setSvgInput ] = useState( '' );
+
+	const sanitizedSvgHtml = () => {
+		const parsed = parseSvg( svgInput );
+		if ( ! parsed ) {
+			return null;
+		}
+		const sanitized = sanitizeSvg( parsed );
+		if ( ! sanitized ) {
+			return null;
+		}
+		return sanitized.outerHTML;
+	};
+
+	const svgHtml = svgInput ? sanitizedSvgHtml() : null;
 
 	return (
 		<div className="wp-block-icon-preview__app-inner">
@@ -20,13 +36,13 @@ export default function App() {
 				onChange={ ( e ) => setSvgInput( e.target.value ) }
 				rows={ 8 }
 			/>
-			{ svgInput && (
+			{ svgHtml && (
 				<div className="wp-block-icon-preview__preview">
 					<h3>{ __( 'Preview', 'wp-block-icon-preview' ) }</h3>
 					<div
 						className="wp-block-icon-preview__preview-output"
 						// eslint-disable-next-line react/no-danger
-						dangerouslySetInnerHTML={ { __html: svgInput } }
+						dangerouslySetInnerHTML={ { __html: svgHtml } }
 					/>
 				</div>
 			) }

@@ -46,6 +46,16 @@ function nodeToJsx( node, indent = 0 ) {
 }
 
 /**
+ * SVG attributes that are semantically numeric and safe to render as JSX expressions.
+ */
+const NUMERIC_ATTRS = new Set( [
+	'width', 'height', 'x', 'y', 'x1', 'y1', 'x2', 'y2', 'r', 'rx', 'ry',
+	'cx', 'cy', 'dx', 'dy', 'fx', 'fy', 'k', 'k1', 'k2', 'k3', 'k4',
+	'tabIndex', 'strokeWidth', 'strokeMiterlimit', 'strokeOpacity',
+	'fillOpacity', 'opacity', 'fontSize',
+] );
+
+/**
  * Convert SVG attributes to JSX attribute string.
  *
  * @param {NamedNodeMap} attributes - Element attributes.
@@ -59,7 +69,9 @@ function attrsToJsx( attributes ) {
 
 			if ( value === 'true' ) return ` ${ name }`;
 			if ( value === 'false' ) return ` ${ name }={false}`;
-			if ( ! isNaN( Number( value ) ) && value !== '' ) return ` ${ name }={${ value }}`;
+			if ( NUMERIC_ATTRS.has( name ) && value !== '' && ! isNaN( Number( value ) ) ) {
+				return ` ${ name }={${ value }}`;
+			}
 
 			return ` ${ name }="${ value }"`;
 		} )

@@ -4,9 +4,6 @@
  * This script runs on the frontend when the block is displayed.
  */
 
-// eslint-disable-next-line no-console
-console.log( 'WP Block Icon Preview: view.js loaded' );
-
 import { createRoot } from '@wordpress/element';
 import App from './components/App';
 

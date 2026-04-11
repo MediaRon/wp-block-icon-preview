@@ -57,11 +57,15 @@ function sanitizeNode( node ) {
 		const attrs = Array.from( node.attributes );
 		attrs.forEach( ( attr ) => {
 			const attrName = attr.name.toLowerCase();
+			const attrValueLower = attr.value.toLowerCase().trim();
+			const isUnsafeUrl =
+				attrValueLower.startsWith( 'javascript:' ) ||
+				attrValueLower.startsWith( 'data:' ) ||
+				attrValueLower.startsWith( 'vbscript:' );
 			if (
 				DISALLOWED_ATTRS.has( attrName ) ||
 				attrName.startsWith( 'on' ) ||
-				( attrName === 'href' && attr.value.startsWith( 'javascript:' ) ) ||
-				( attrName === 'xlink:href' && attr.value.startsWith( 'javascript:' ) )
+				( ( attrName === 'href' || attrName === 'xlink:href' ) && isUnsafeUrl )
 			) {
 				node.removeAttribute( attr.name );
 			}
