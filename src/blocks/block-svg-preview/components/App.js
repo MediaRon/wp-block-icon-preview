@@ -1,24 +1,41 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { parseSvg } from '../../../utilities/parse-svg';
-import { sanitizeSvg } from '../../../utilities/sanitize-svg';
+import { sanitizeSvgString } from '../../../utilities/sanitize-svg';
 
 export default function App() {
 	const [ svgInput, setSvgInput ] = useState( '' );
+	const [ previewHtml, setPreviewHtml ] = useState( null );
+	const [ processError, setProcessError ] = useState( null );
+	const [ isProcessing, setIsProcessing ] = useState( false );
 
-	const sanitizedSvgHtml = () => {
+	const handleProcess = async () => {
+		setProcessError( null );
+		setPreviewHtml( null );
+
 		const parsed = parseSvg( svgInput );
-		if ( ! parsed ) {
-			return null;
+		if ( ! parsed.svg || parsed.error ) {
+			setProcessError(
+				parsed.error ||
+					__( 'Could not parse SVG.', 'wp-block-icon-preview' )
+			);
+			return;
 		}
-		const sanitized = sanitizeSvg( parsed );
-		if ( ! sanitized ) {
-			return null;
-		}
-		return sanitized.outerHTML;
-	};
 
-	const svgHtml = svgInput ? sanitizedSvgHtml() : null;
+		setIsProcessing( true );
+		try {
+			const out = await sanitizeSvgString( parsed.svg.outerHTML );
+			setPreviewHtml( out );
+		} catch ( err ) {
+			const message =
+				err instanceof Error
+					? err.message
+					: __( 'Processing failed.', 'wp-block-icon-preview' );
+			setProcessError( message );
+		} finally {
+			setIsProcessing( false );
+		}
+	};
 
 	return (
 		<div className="wp-block-icon-preview__app-inner">
@@ -36,13 +53,30 @@ export default function App() {
 				onChange={ ( e ) => setSvgInput( e.target.value ) }
 				rows={ 8 }
 			/>
-			{ svgHtml && (
+			<p>
+				<button
+					type="button"
+					className="wp-block-icon-preview__process"
+					onClick={ handleProcess }
+					disabled={ isProcessing || ! svgInput.trim() }
+				>
+					{ isProcessing
+						? __( 'Processing…', 'wp-block-icon-preview' )
+						: __( 'Process SVG', 'wp-block-icon-preview' ) }
+				</button>
+			</p>
+			{ processError && (
+				<p className="wp-block-icon-preview__error" role="alert">
+					{ processError }
+				</p>
+			) }
+			{ previewHtml && (
 				<div className="wp-block-icon-preview__preview">
 					<h3>{ __( 'Preview', 'wp-block-icon-preview' ) }</h3>
 					<div
 						className="wp-block-icon-preview__preview-output"
 						// eslint-disable-next-line react/no-danger
-						dangerouslySetInnerHTML={ { __html: svgHtml } }
+						dangerouslySetInnerHTML={ { __html: previewHtml } }
 					/>
 				</div>
 			) }

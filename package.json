@@ -12,6 +12,13 @@
     "packages-update": "wp-scripts packages-update"
   },
   "devDependencies": {
-    "@wordpress/scripts": "^30.0.0"
+    "@wordpress/scripts": "^30.0.0",
+    "path": "^0.12.7",
+    "promise-fs": "^2.1.1",
+    "url": "^0.11.4"
+  },
+  "dependencies": {
+    "dompurify": "^3.3.3",
+    "svgo": "^4.0.1"
   }
 }
