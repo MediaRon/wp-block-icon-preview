@@ -6,8 +6,8 @@
  * convertStyleToAttrs then moves presentation properties onto attributes; DOMPurify last
  * for XSS-safe output.
  *
- * Use static imports so webpack does not emit async chunks. Dynamic chunks often 404 in
- * WordPress because the runtime publicPath does not match how scripts are enqueued.
+ * This module is part of the async chunk loaded from process-svg.js (see process-svg-impl.js).
+ * The chunk name must stay under block-svg-preview/ so it lands beside view.js in build output.
  */
 
 import DOMPurify from 'dompurify';

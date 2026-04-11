@@ -14,6 +14,11 @@ const wpScriptsConfig = require( '@wordpress/scripts/config/webpack.config' );
 function patchConfig( config ) {
 	return {
 		...config,
+		output: {
+			...config.output,
+			// Helps async import() resolve chunk URLs from the script that loaded the entry.
+			publicPath: config.output?.publicPath ?? 'auto',
+		},
 		resolve: {
 			...config.resolve,
 			alias: {
