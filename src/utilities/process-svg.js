@@ -80,13 +80,22 @@ export async function processSvgInput( rawString, options = {} ) {
 	const toolbarPreviewSvgMono = toolbarBuilt.svgString;
 	const toolbarFillsReplacedCount = toolbarBuilt.replacedCount;
 
-	let jsxToolbar = '';
-	let tsxToolbar = '';
+	let jsxToolbarColor = '';
+	let tsxToolbarColor = '';
+	let jsxToolbarMono = '';
+	let tsxToolbarMono = '';
 	let reactTransformOk = false;
 	let reactTransformError = null;
 
 	try {
-		[ jsxToolbar, tsxToolbar ] = await Promise.all( [
+		[
+			jsxToolbarColor,
+			tsxToolbarColor,
+			jsxToolbarMono,
+			tsxToolbarMono,
+		] = await Promise.all( [
+			toJsx( toolbarPreviewSvgColor, componentName ),
+			toTsx( toolbarPreviewSvgColor, componentName ),
 			toJsx( toolbarPreviewSvgMono, componentName ),
 			toTsx( toolbarPreviewSvgMono, componentName ),
 		] );
@@ -116,8 +125,10 @@ export async function processSvgInput( rawString, options = {} ) {
 		sanitizedMetrics,
 		strippedInlineStyleCount,
 		verdict,
-		jsxToolbar,
-		tsxToolbar,
+		jsxToolbarColor,
+		tsxToolbarColor,
+		jsxToolbarMono,
+		tsxToolbarMono,
 		toolbarFillsReplacedCount,
 		blockJsonString: toBlockJsonString( orgExportSvg ),
 		blockJsonEscapedInner: toBlockJsonEscapedInner( orgExportSvg ),

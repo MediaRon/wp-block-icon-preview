@@ -48,6 +48,8 @@
 		border: 1px solid var(--wbip-color-border);
 		border-radius: var(--wbip-radius-md);
 		padding: var(--wbip-space-4);
+		max-height: 550px;
+		overflow: auto;
 	}
 
 	.wbip-app__title {

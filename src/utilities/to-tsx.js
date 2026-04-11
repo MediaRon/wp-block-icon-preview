@@ -7,6 +7,7 @@ import {
 	createSvgrExportConfig,
 	createSvgrState,
 	normalizeSvgInput,
+	patchSvgrTsxSvgPropsImport,
 	sanitizeComponentName,
 } from './svgr-shared-config';
 
@@ -24,9 +25,10 @@ export async function toTsx( svgInput, name = 'Icon', svgrOverrides = {} ) {
 		return '';
 	}
 	const componentName = sanitizeComponentName( name );
-	return transform(
+	const code = await transform(
 		str,
 		createSvgrExportConfig( { typescript: true, ...svgrOverrides } ),
 		createSvgrState( componentName )
 	);
+	return patchSvgrTsxSvgPropsImport( code );
 }

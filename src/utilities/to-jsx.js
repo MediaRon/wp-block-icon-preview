@@ -7,6 +7,7 @@ import {
 	createSvgrExportConfig,
 	createSvgrState,
 	normalizeSvgInput,
+	stripSvgrWordPressCreateElementImport,
 } from './svgr-shared-config';
 
 /**
@@ -26,9 +27,10 @@ export async function toJsx(
 	if ( ! str ) {
 		return '';
 	}
-	return transform(
+	const code = await transform(
 		str,
 		createSvgrExportConfig( svgrOverrides ),
 		createSvgrState( componentName )
 	);
+	return stripSvgrWordPressCreateElementImport( code );
 }
