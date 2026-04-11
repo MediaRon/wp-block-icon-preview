@@ -80,17 +80,13 @@ export async function processSvgInput( rawString, options = {} ) {
 	const toolbarPreviewSvgMono = toolbarBuilt.svgString;
 	const toolbarFillsReplacedCount = toolbarBuilt.replacedCount;
 
-	let jsxOrg = '';
-	let tsxOrg = '';
 	let jsxToolbar = '';
 	let tsxToolbar = '';
 	let reactTransformOk = false;
 	let reactTransformError = null;
 
 	try {
-		[ jsxOrg, tsxOrg, jsxToolbar, tsxToolbar ] = await Promise.all( [
-			toJsx( orgExportSvg, componentName ),
-			toTsx( orgExportSvg, componentName ),
+		[ jsxToolbar, tsxToolbar ] = await Promise.all( [
 			toJsx( toolbarPreviewSvgMono, componentName ),
 			toTsx( toolbarPreviewSvgMono, componentName ),
 		] );
@@ -120,14 +116,12 @@ export async function processSvgInput( rawString, options = {} ) {
 		sanitizedMetrics,
 		strippedInlineStyleCount,
 		verdict,
-		jsxOrg,
-		tsxOrg,
 		jsxToolbar,
 		tsxToolbar,
 		toolbarFillsReplacedCount,
-		blockJsonString: toBlockJsonString( sanitizedSvg ),
-		blockJsonEscapedInner: toBlockJsonEscapedInner( sanitizedSvg ),
-		blockJsonQuotedString: toBlockJsonQuotedString( sanitizedSvg ),
+		blockJsonString: toBlockJsonString( orgExportSvg ),
+		blockJsonEscapedInner: toBlockJsonEscapedInner( orgExportSvg ),
+		blockJsonQuotedString: toBlockJsonQuotedString( orgExportSvg ),
 		reactTransformOk,
 		reactTransformError,
 	};

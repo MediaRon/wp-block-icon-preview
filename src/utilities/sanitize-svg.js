@@ -1,5 +1,10 @@
 /**
- * DOMPurify + SVGO pipeline for WordPress-oriented SVG strings.
+ * SVGO then DOMPurify for WordPress-oriented SVG strings.
+ *
+ * SVGO must run first so preset inlineStyles can read embedded <style> blocks and apply
+ * class-based rules (e.g. .st0 { fill: #000 }) to elements before <style> is removed.
+ * convertStyleToAttrs then moves presentation properties onto attributes; DOMPurify last
+ * for XSS-safe output.
  *
  * Use static imports so webpack does not emit async chunks. Dynamic chunks often 404 in
  * WordPress because the runtime publicPath does not match how scripts are enqueued.
@@ -9,7 +14,7 @@ import DOMPurify from 'dompurify';
 import { optimize } from 'svgo/browser';
 
 /**
- * Strip unsafe SVG/XML constructs before SVGO.
+ * Strip unsafe SVG/XML constructs (run after SVGO so class/stylesheet inlining can occur).
  *
  * @param {string} svgMarkup - Serialized SVG.
  * @return {string} Sanitized SVG string.
@@ -118,12 +123,12 @@ export function svgoOptimizeString( svgMarkup ) {
 }
 
 /**
- * Full pipeline: DOMPurify then SVGO.
+ * Full pipeline: SVGO (inlineStyles, convertStyleToAttrs, etc.) then DOMPurify.
  *
  * @param {string} svgMarkup - Serialized SVG (root `<svg>`…).
  * @return {string} Sanitized and optimized SVG string.
  */
 export function sanitizeSvgString( svgMarkup ) {
-	const purified = purifySvgString( svgMarkup );
-	return svgoOptimizeString( purified );
+	const optimized = svgoOptimizeString( svgMarkup );
+	return purifySvgString( optimized );
 }

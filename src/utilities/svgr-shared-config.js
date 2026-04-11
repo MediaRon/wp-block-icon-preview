@@ -5,7 +5,7 @@
 import jsxPlugin from '@svgr/plugin-jsx';
 
 /**
- * Base config for downloadable components: explicit SVG width/height (no 1em from icon mode).
+ * Base config for downloadable components: keep root width/height from the SVG string.
  *
  * @param {Record<string, unknown>} [overrides] - Merged onto base config.
  * @return {import('@svgr/core').Config}
@@ -18,7 +18,8 @@ export function createSvgrExportConfig( overrides = {} ) {
 		prettier: false,
 		runtimeConfig: false,
 		jsxRuntime: 'classic',
-		dimensions: false,
+		// When false, @svgr/babel-preset strips width/height from the output.
+		dimensions: true,
 		expandProps: 'end',
 		...overrides,
 	};
