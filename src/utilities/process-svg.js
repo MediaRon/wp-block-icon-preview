@@ -3,14 +3,20 @@
  */
 
 import { parseSvg } from './parse-svg';
-import { collectOrgMetrics } from './org-svg-metrics';
+import {
+	collectOrgMetrics,
+	countInlineStyles,
+} from './org-svg-metrics';
 import { sanitizeSvgString } from './sanitize-svg';
 import { toJsx } from './to-jsx';
 import { toTsx } from './to-tsx';
 import {
 	toBlockJsonString,
 	toBlockJsonEscapedInner,
+	toBlockJsonQuotedString,
 } from './to-block-json-string';
+import { deriveVerdict } from './process-diagnostics';
+import { toOrgPreviewSvgString } from './org-preview-subset';
 
 /**
  * @param {string} rawString - User-pasted SVG.
@@ -48,6 +54,16 @@ export async function processSvgInput( rawString, options = {} ) {
 		};
 	}
 
+	const postParse = parseSvg( sanitizedSvg );
+	let strippedInlineStyleCount = 0;
+	if ( postParse.svg ) {
+		const postInline = countInlineStyles( postParse.svg );
+		strippedInlineStyleCount = Math.max(
+			0,
+			preMetrics.inlineStyleAttributeCount - postInline
+		);
+	}
+
 	let jsx = '';
 	let tsx = '';
 	let reactTransformOk = false;
@@ -62,15 +78,30 @@ export async function processSvgInput( rawString, options = {} ) {
 			err instanceof Error ? err.message : String( err );
 	}
 
+	const verdict = deriveVerdict( {
+		preMetrics,
+		strippedInlineStyleCount,
+		reactTransformOk,
+		hasXmlDeclaration: parse.hasXmlDeclaration,
+		hasDoctype: parse.hasDoctype,
+	} );
+
+	const orgPreviewSvg = toOrgPreviewSvgString( sanitizedSvg );
+
 	return {
 		ok: true,
+		componentName,
 		sanitizedSvg,
+		orgPreviewSvg,
 		parse,
 		preMetrics,
+		strippedInlineStyleCount,
+		verdict,
 		jsx,
 		tsx,
 		blockJsonString: toBlockJsonString( sanitizedSvg ),
 		blockJsonEscapedInner: toBlockJsonEscapedInner( sanitizedSvg ),
+		blockJsonQuotedString: toBlockJsonQuotedString( sanitizedSvg ),
 		reactTransformOk,
 		reactTransformError,
 	};

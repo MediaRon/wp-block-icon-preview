@@ -1,0 +1,26 @@
+// Design tokens scoped for the block icon preview app.
+
+.wp-block-icon-preview .wbip-app {
+	--wbip-color-bg: #f6f7f7;
+	--wbip-color-surface: #ffffff;
+	--wbip-color-border: #dcdcde;
+	--wbip-color-text: #1e1e1e;
+	--wbip-color-muted: #50575e;
+	--wbip-color-success: #0a7f3f;
+	--wbip-color-warning: #b26200;
+	--wbip-color-danger: #b32d2e;
+	--wbip-color-accent: #3858e9;
+
+	--wbip-radius-sm: 4px;
+	--wbip-radius-md: 6px;
+
+	--wbip-space-1: 4px;
+	--wbip-space-2: 8px;
+	--wbip-space-3: 12px;
+	--wbip-space-4: 16px;
+	--wbip-space-5: 24px;
+	--wbip-space-6: 32px;
+
+	--wbip-font-sans: -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif;
+	--wbip-font-mono: ui-monospace, sfmono-regular, menlo, monaco, consolas, monospace;
+}
