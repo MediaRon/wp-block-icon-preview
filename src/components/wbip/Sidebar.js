@@ -205,7 +205,7 @@ export function WbipSidebar({ result }) {
 								{__('WP Block Icon Preview', 'wp-block-icon-preview')}
 							</span>
 							<span className="wbip-preview-toolbar__sub">
-								{__('Preview text', 'wp-block-icon-preview')}
+								{__('This is a block icon preview.', 'wp-block-icon-preview')}
 							</span>
 						</span>
 					</div>
@@ -214,7 +214,7 @@ export function WbipSidebar({ result }) {
 					</h3>
 					<p className="wbip-output-intro">
 						{__(
-							'Toolbar / block UI components (24px root). JSX/TSX downloads match the color toggle above. Block.json SVG uses the .org subset at 16px.',
+							'Download the JSX or TSX files to use in your block editor component.',
 							'wp-block-icon-preview'
 						)}
 					</p>
@@ -224,14 +224,14 @@ export function WbipSidebar({ result }) {
 							onClick={handleDownloadJsxToolbar}
 							disabled={!jsxToolbarActive}
 						>
-							{__('Download JSX (Block Editor Component)', 'wp-block-icon-preview')}
+							{__('Download JSX', 'wp-block-icon-preview')}
 						</WbipButton>
 						<WbipButton
 							variant="secondary"
 							onClick={handleDownloadTsxToolbar}
 							disabled={!tsxToolbarActive}
 						>
-							{__('Download TSX (React Component)', 'wp-block-icon-preview')}
+							{__('Download TSX', 'wp-block-icon-preview')}
 						</WbipButton>
 					</div>
 					<details className="wbip-code-details">
@@ -249,7 +249,7 @@ export function WbipSidebar({ result }) {
 				</section>
 
 				<section className="wbip-card" aria-labelledby={orgTitleId}>
-					<h3 className="wbip-section-heading wbip-section-heading--link" id={orgTitleId}>
+					<h3 className="wbip-section-heading" id={orgTitleId}>
 						{__('WordPress.org Block Icon Preview', 'wp-block-icon-preview')}
 					</h3>
 					<p className="wbip-preview-org__hint">
