@@ -82,11 +82,16 @@ export function getSvgoConfig() {
 						inlineStyles: {
 							onlyMatchedOnce: false,
 						},
+						// Keep author fills/strokes; preset defaults strip “redundant” fills and rewrite colors.
+						removeUselessStrokeAndFill: false,
+						convertColors: false,
 					},
 				},
 			},
 			'removeScripts',
 			'removeStyleElement',
+			// Hoist presentation properties out of inline style before removeAttrs drops style/class.
+			'convertStyleToAttrs',
 			{
 				name: 'removeAttrs',
 				params: {

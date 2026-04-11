@@ -3,7 +3,7 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import { useId } from '@wordpress/element';
+import { useId, useState } from '@wordpress/element';
 import { downloadTextFile } from '../../utilities/download-text-file';
 import { sanitizeComponentName } from '../../utilities/svgr-shared-config';
 import { WbipButton } from './Button';
@@ -15,6 +15,7 @@ import { WbipCopyButton } from './CopyButton';
  */
 export function WbipSidebar( { result } ) {
 	const baseId = useId().replace( /[^a-zA-Z0-9_-]/g, '-' );
+	const [ toolbarShowColors, setToolbarShowColors ] = useState( true );
 
 	if ( ! result ) {
 		return (
@@ -28,13 +29,18 @@ export function WbipSidebar( { result } ) {
 	}
 
 	const {
-		sanitizedSvg,
+		toolbarPreviewSvgColor,
+		toolbarPreviewSvgMono,
 		orgPreviewSvg,
 		preMetrics,
+		sanitizedMetrics = preMetrics,
 		strippedInlineStyleCount,
 		verdict,
-		jsx,
-		tsx,
+		jsxOrg,
+		tsxOrg,
+		jsxToolbar,
+		tsxToolbar,
+		toolbarFillsReplacedCount,
 		blockJsonEscapedInner,
 		reactTransformOk,
 		reactTransformError,
@@ -43,16 +49,29 @@ export function WbipSidebar( { result } ) {
 	} = result;
 
 	const safeName = sanitizeComponentName( rawComponentName || 'BlockIcon' );
+	const fillSamples = sanitizedMetrics.fillSamples || [];
 
-	const handleDownloadJsx = () => {
-		if ( jsx ) {
-			downloadTextFile( `${ safeName }.jsx`, jsx );
+	const handleDownloadJsxOrg = () => {
+		if ( jsxOrg ) {
+			downloadTextFile( `${ safeName }.org.jsx`, jsxOrg );
 		}
 	};
 
-	const handleDownloadTsx = () => {
-		if ( tsx ) {
-			downloadTextFile( `${ safeName }.tsx`, tsx );
+	const handleDownloadTsxOrg = () => {
+		if ( tsxOrg ) {
+			downloadTextFile( `${ safeName }.org.tsx`, tsxOrg );
+		}
+	};
+
+	const handleDownloadJsxToolbar = () => {
+		if ( jsxToolbar ) {
+			downloadTextFile( `${ safeName }.toolbar.jsx`, jsxToolbar );
+		}
+	};
+
+	const handleDownloadTsxToolbar = () => {
+		if ( tsxToolbar ) {
+			downloadTextFile( `${ safeName }.toolbar.tsx`, tsxToolbar );
 		}
 	};
 
@@ -68,6 +87,12 @@ export function WbipSidebar( { result } ) {
 	const diagTitleId = `wbip-diag-${ baseId }`;
 	const outTitleId = `wbip-out-${ baseId }`;
 	const blockJsonFieldId = `wbip-bj-${ baseId }`;
+	const toolbarToggleId = `wbip-tb-toggle-${ baseId }`;
+	const toolbarToggleMonoId = `wbip-tb-mono-${ baseId }`;
+
+	const toolbarPreviewMarkup = toolbarShowColors
+		? toolbarPreviewSvgColor || ''
+		: toolbarPreviewSvgMono || '';
 
 	const hasDiagNotes =
 		! preMetrics.hasViewBox ||
@@ -146,11 +171,39 @@ export function WbipSidebar( { result } ) {
 					<h3 className="wbip-section-heading" id={ toolbarTitleId }>
 						{ __( 'Toolbar Preview', 'wp-block-icon-preview' ) }
 					</h3>
+					<div
+						className="wbip-preview-toolbar__toggle"
+						role="group"
+						aria-label={ __( 'Toolbar icon color mode', 'wp-block-icon-preview' ) }
+					>
+						<label className="wbip-toggle-option">
+							<input
+								id={ toolbarToggleId }
+								type="radio"
+								name={ `wbip-toolbar-color-${ baseId }` }
+								checked={ toolbarShowColors }
+								onChange={ () => setToolbarShowColors( true ) }
+							/>
+							<span>{ __( 'Original colors', 'wp-block-icon-preview' ) }</span>
+						</label>
+						<label className="wbip-toggle-option">
+							<input
+								id={ toolbarToggleMonoId }
+								type="radio"
+								name={ `wbip-toolbar-color-${ baseId }` }
+								checked={ ! toolbarShowColors }
+								onChange={ () => setToolbarShowColors( false ) }
+							/>
+							<span>{ __( 'currentColor', 'wp-block-icon-preview' ) }</span>
+						</label>
+					</div>
 					<div className="wbip-preview-toolbar">
 						<span
 							className="wbip-preview-toolbar__icon"
 							// eslint-disable-next-line react/no-danger
-							dangerouslySetInnerHTML={ { __html: sanitizedSvg } }
+							dangerouslySetInnerHTML={ {
+								__html: toolbarPreviewMarkup,
+							} }
 						/>
 						<span className="wbip-preview-toolbar__text">
 							<span className="wbip-preview-toolbar__title">
@@ -169,7 +222,7 @@ export function WbipSidebar( { result } ) {
 					</h3>
 					<p className="wbip-preview-org__hint">
 						{ __(
-							'Shows only svg, g, and path (elements like circle are hidden here).',
+							'Shows only svg, g, and path at 16×16 px; original fills kept (elements like circle are hidden).',
 							'wp-block-icon-preview'
 						) }
 					</p>
@@ -178,7 +231,7 @@ export function WbipSidebar( { result } ) {
 							className="wbip-preview-org__icon"
 							// eslint-disable-next-line react/no-danger
 							dangerouslySetInnerHTML={ {
-								__html: orgPreviewSvg || sanitizedSvg,
+								__html: orgPreviewSvg || '',
 							} }
 						/>
 						<div className="wbip-preview-org__body">
@@ -266,6 +319,45 @@ export function WbipSidebar( { result } ) {
 							) }
 						</li>
 					) }
+					{ fillSamples.length > 0 && (
+						<li className="wbip-issue-list__item wbip-issue-list__item--info">
+							{ sprintf(
+								/* translators: %s: Comma-separated list of fill attribute values. */
+								__(
+									'Sanitized SVG fill values: %s',
+									'wp-block-icon-preview'
+								),
+								fillSamples.join( ', ' )
+							) }
+						</li>
+					) }
+					<li className="wbip-issue-list__item wbip-issue-list__item--info">
+						{ __(
+							'WordPress.org preview and JSX/TSX: 16×16 px root; only svg, g, path. Fill and stroke attributes are not modified for .org (same as sanitized SVG on remaining nodes).',
+							'wp-block-icon-preview'
+						) }
+					</li>
+					<li className="wbip-issue-list__item wbip-issue-list__item--info">
+						{ __(
+							'Toolbar preview: use the toggle to view original colors or currentColor. Toolbar JSX/TSX downloads always use currentColor.',
+							'wp-block-icon-preview'
+						) }
+					</li>
+					<li className="wbip-issue-list__item wbip-issue-list__item--info">
+						{ toolbarFillsReplacedCount > 0
+							? sprintf(
+									/* translators: %d: Number of fill attributes changed to currentColor. */
+									__(
+										'Toolbar JSX/TSX files: 24×24 px root; %d fill attribute(s) set to currentColor for export.',
+										'wp-block-icon-preview'
+									),
+									toolbarFillsReplacedCount
+							  )
+							: __(
+									'Toolbar JSX/TSX files: 24×24 px root; fills set to currentColor for export (none needed changing, or no solid fills).',
+									'wp-block-icon-preview'
+							  ) }
+					</li>
 				</ul>
 			</section>
 
@@ -273,29 +365,65 @@ export function WbipSidebar( { result } ) {
 				<h3 className="wbip-section-heading" id={ outTitleId }>
 					{ __( 'Download', 'wp-block-icon-preview' ) }
 				</h3>
-				<div className="wbip-output-actions">
+				<p className="wbip-output-intro">
+					{ __(
+						'WordPress.org (16px, keeps colors) vs toolbar / block UI (24px, currentColor).',
+						'wp-block-icon-preview'
+					) }
+				</p>
+				<div className="wbip-output-actions wbip-output-actions--grid">
 					<WbipButton
 						variant="primary"
-						onClick={ handleDownloadJsx }
-						disabled={ ! jsx }
+						onClick={ handleDownloadJsxOrg }
+						disabled={ ! jsxOrg }
 					>
-						{ __( 'Download as JSX', 'wp-block-icon-preview' ) }
+						{ __( 'Download JSX (.org)', 'wp-block-icon-preview' ) }
 					</WbipButton>
 					<WbipButton
 						variant="primary"
-						onClick={ handleDownloadTsx }
-						disabled={ ! tsx }
+						onClick={ handleDownloadTsxOrg }
+						disabled={ ! tsxOrg }
 					>
-						{ __( 'Download as TSX', 'wp-block-icon-preview' ) }
+						{ __( 'Download TSX (.org)', 'wp-block-icon-preview' ) }
+					</WbipButton>
+					<WbipButton
+						variant="secondary"
+						onClick={ handleDownloadJsxToolbar }
+						disabled={ ! jsxToolbar }
+					>
+						{ __( 'Download JSX (toolbar)', 'wp-block-icon-preview' ) }
+					</WbipButton>
+					<WbipButton
+						variant="secondary"
+						onClick={ handleDownloadTsxToolbar }
+						disabled={ ! tsxToolbar }
+					>
+						{ __( 'Download TSX (toolbar)', 'wp-block-icon-preview' ) }
 					</WbipButton>
 				</div>
 				<details className="wbip-code-details">
-					<summary>{ __( 'Show generated JSX', 'wp-block-icon-preview' ) }</summary>
-					<pre className="wbip-code">{ jsx || '—' }</pre>
+					<summary>
+						{ __( 'Show JSX (.org)', 'wp-block-icon-preview' ) }
+					</summary>
+					<pre className="wbip-code">{ jsxOrg || '—' }</pre>
 				</details>
 				<details className="wbip-code-details">
-					<summary>{ __( 'Show generated TSX', 'wp-block-icon-preview' ) }</summary>
-					<pre className="wbip-code">{ tsx || '—' }</pre>
+					<summary>
+						{ __( 'Show TSX (.org)', 'wp-block-icon-preview' ) }
+					</summary>
+					<pre className="wbip-code">{ tsxOrg || '—' }</pre>
+				</details>
+				<details className="wbip-code-details">
+					<summary>
+						{ __( 'Show JSX (toolbar)', 'wp-block-icon-preview' ) }
+					</summary>
+					<pre className="wbip-code">{ jsxToolbar || '—' }</pre>
+				</details>
+				<details className="wbip-code-details">
+					<summary>
+						{ __( 'Show TSX (toolbar)', 'wp-block-icon-preview' ) }
+					</summary>
+					<pre className="wbip-code">{ tsxToolbar || '—' }</pre>
 				</details>
 
 				<h3 className="wbip-section-heading wbip-section-heading--spaced">

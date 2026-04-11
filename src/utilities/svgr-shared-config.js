@@ -5,23 +5,21 @@
 import jsxPlugin from '@svgr/plugin-jsx';
 
 /**
+ * Base config for downloadable components: explicit SVG width/height (no 1em from icon mode).
+ *
  * @param {Record<string, unknown>} [overrides] - Merged onto base config.
  * @return {import('@svgr/core').Config}
  */
-export function createSvgrConfig( overrides = {} ) {
+export function createSvgrExportConfig( overrides = {} ) {
 	return {
 		plugins: [ jsxPlugin ],
-		icon: true,
+		icon: false,
 		svgo: false,
 		prettier: false,
 		runtimeConfig: false,
 		jsxRuntime: 'classic',
-		dimensions: true,
+		dimensions: false,
 		expandProps: 'end',
-		replaceAttrValues: {
-			'#000': 'currentColor',
-			'#000000': 'currentColor',
-		},
 		...overrides,
 	};
 }

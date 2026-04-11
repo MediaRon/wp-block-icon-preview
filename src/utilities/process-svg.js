@@ -16,7 +16,11 @@ import {
 	toBlockJsonQuotedString,
 } from './to-block-json-string';
 import { deriveVerdict } from './process-diagnostics';
-import { toOrgPreviewSvgString } from './org-preview-subset';
+import {
+	buildOrgExportSvg,
+	buildToolbarExportSvg,
+	buildToolbarPreviewSvgWithColors,
+} from './svg-export-variants';
 
 /**
  * @param {string} rawString - User-pasted SVG.
@@ -55,6 +59,10 @@ export async function processSvgInput( rawString, options = {} ) {
 	}
 
 	const postParse = parseSvg( sanitizedSvg );
+	const sanitizedMetrics = postParse.svg
+		? collectOrgMetrics( postParse.svg )
+		: preMetrics;
+
 	let strippedInlineStyleCount = 0;
 	if ( postParse.svg ) {
 		const postInline = countInlineStyles( postParse.svg );
@@ -64,14 +72,28 @@ export async function processSvgInput( rawString, options = {} ) {
 		);
 	}
 
-	let jsx = '';
-	let tsx = '';
+	const orgExportSvg = buildOrgExportSvg( sanitizedSvg );
+	const toolbarPreviewSvgColor = buildToolbarPreviewSvgWithColors(
+		sanitizedSvg
+	);
+	const toolbarBuilt = buildToolbarExportSvg( sanitizedSvg );
+	const toolbarPreviewSvgMono = toolbarBuilt.svgString;
+	const toolbarFillsReplacedCount = toolbarBuilt.replacedCount;
+
+	let jsxOrg = '';
+	let tsxOrg = '';
+	let jsxToolbar = '';
+	let tsxToolbar = '';
 	let reactTransformOk = false;
 	let reactTransformError = null;
 
 	try {
-		jsx = await toJsx( sanitizedSvg, componentName );
-		tsx = await toTsx( sanitizedSvg, componentName );
+		[ jsxOrg, tsxOrg, jsxToolbar, tsxToolbar ] = await Promise.all( [
+			toJsx( orgExportSvg, componentName ),
+			toTsx( orgExportSvg, componentName ),
+			toJsx( toolbarPreviewSvgMono, componentName ),
+			toTsx( toolbarPreviewSvgMono, componentName ),
+		] );
 		reactTransformOk = true;
 	} catch ( err ) {
 		reactTransformError =
@@ -86,19 +108,23 @@ export async function processSvgInput( rawString, options = {} ) {
 		hasDoctype: parse.hasDoctype,
 	} );
 
-	const orgPreviewSvg = toOrgPreviewSvgString( sanitizedSvg );
-
 	return {
 		ok: true,
 		componentName,
 		sanitizedSvg,
-		orgPreviewSvg,
+		orgPreviewSvg: orgExportSvg,
+		toolbarPreviewSvgColor,
+		toolbarPreviewSvgMono,
 		parse,
 		preMetrics,
+		sanitizedMetrics,
 		strippedInlineStyleCount,
 		verdict,
-		jsx,
-		tsx,
+		jsxOrg,
+		tsxOrg,
+		jsxToolbar,
+		tsxToolbar,
+		toolbarFillsReplacedCount,
 		blockJsonString: toBlockJsonString( sanitizedSvg ),
 		blockJsonEscapedInner: toBlockJsonEscapedInner( sanitizedSvg ),
 		blockJsonQuotedString: toBlockJsonQuotedString( sanitizedSvg ),

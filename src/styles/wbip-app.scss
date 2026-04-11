@@ -264,6 +264,26 @@
 		margin-bottom: var(--wbip-space-4);
 	}
 
+	.wbip-preview-toolbar__toggle {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--wbip-space-3);
+		margin-bottom: var(--wbip-space-3);
+		font-size: 13px;
+	}
+
+	.wbip-toggle-option {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--wbip-space-2);
+		cursor: pointer;
+		color: var(--wbip-color-text);
+	}
+
+	.wbip-toggle-option input {
+		margin: 0;
+	}
+
 	.wbip-preview-toolbar {
 		display: flex;
 		align-items: center;
@@ -396,11 +416,30 @@
 		background: var(--wbip-color-success);
 	}
 
+	.wbip-output-intro {
+		margin: 0 0 var(--wbip-space-3);
+		font-size: 12px;
+		color: var(--wbip-color-muted);
+		line-height: 1.4;
+	}
+
 	.wbip-output-actions {
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--wbip-space-2);
 		margin-bottom: var(--wbip-space-3);
+	}
+
+	.wbip-output-actions--grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--wbip-space-2);
+	}
+
+	@media (max-width: 400px) {
+		.wbip-output-actions--grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.wbip-copy-button.wbip-copy-block-json {

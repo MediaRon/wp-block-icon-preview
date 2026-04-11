@@ -67,6 +67,8 @@ export function collectOrgMetrics( root ) {
 		pathCount,
 		maxGroupNesting,
 		distinctFillCount: fillValues.size,
+		/** @type {string[]} Sample of distinct fill values (for diagnostics). */
+		fillSamples: Array.from( fillValues ).slice( 0, 12 ),
 		hasViewBox,
 	};
 }
