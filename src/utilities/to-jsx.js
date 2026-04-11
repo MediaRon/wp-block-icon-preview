@@ -69,7 +69,7 @@ function attrsToJsx( attributes ) {
 
 			if ( value === 'true' ) return ` ${ name }`;
 			if ( value === 'false' ) return ` ${ name }={false}`;
-			if ( NUMERIC_ATTRS.has( name ) && value !== '' && ! isNaN( Number( value ) ) ) {
+			if ( NUMERIC_ATTRS.has( name ) && value.trim() !== '' && ! isNaN( Number( value ) ) ) {
 				return ` ${ name }={${ value }}`;
 			}
 

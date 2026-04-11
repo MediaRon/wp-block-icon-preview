@@ -10,7 +10,7 @@ export function parseSvg( svgString ) {
 	}
 
 	const trimmed = svgString.trim();
-	if ( ! trimmed.startsWith( '<svg' ) && ! trimmed.startsWith( '<SVG' ) ) {
+	if ( ! trimmed.toLowerCase().startsWith( '<svg' ) ) {
 		return null;
 	}
 
