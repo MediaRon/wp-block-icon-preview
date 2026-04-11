@@ -3,5 +3,6 @@ parameters:
     paths:
         - wp-block-icon-preview.php
         - src/php/
+		- /Users/ronaldhuereca/Sites/mediaron/
     bootstrapFiles: []
     ignoreErrors: []

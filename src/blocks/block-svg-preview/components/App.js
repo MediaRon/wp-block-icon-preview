@@ -1,7 +1,7 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { parseSvg } from '../../utilities/parse-svg';
-import { sanitizeSvg } from '../../utilities/sanitize-svg';
+import { parseSvg } from '../../../utilities/parse-svg';
+import { sanitizeSvg } from '../../../utilities/sanitize-svg';
 
 export default function App() {
 	const [ svgInput, setSvgInput ] = useState( '' );
