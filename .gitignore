@@ -141,3 +141,5 @@ vite.config.ts.timestamp-*
 # WordPress plugin build artifacts
 /vendor/
 /build/
+
+wp-block-icon-preview.zip
